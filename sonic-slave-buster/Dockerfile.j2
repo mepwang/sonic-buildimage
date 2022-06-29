@@ -11,13 +11,16 @@ FROM {{ prefix }}debian:buster
 
 MAINTAINER gulv@microsoft.com
 
+# 配置golang镜像
+ENV GOPROXY https://goproxy.cn,direct
+
 COPY ["no-check-valid-until", "/etc/apt/apt.conf.d/"]
 
-RUN echo "deb [arch=amd64] http://debian-archive.trafficmanager.net/debian/ buster main contrib non-free" >> /etc/apt/sources.list && \
-        echo "deb-src [arch=amd64] http://debian-archive.trafficmanager.net/debian/ buster main contrib non-free" >> /etc/apt/sources.list && \
-        echo "deb [arch=amd64] http://debian-archive.trafficmanager.net/debian-security/ buster/updates main contrib non-free" >> /etc/apt/sources.list && \
-        echo "deb-src [arch=amd64] http://debian-archive.trafficmanager.net/debian-security/ buster/updates main contrib non-free" >> /etc/apt/sources.list && \
-        echo "deb [arch=amd64] http://debian-archive.trafficmanager.net/debian buster-backports main" >> /etc/apt/sources.list && \
+RUN echo "deb [arch=amd64] http://mirrors.ustc.edu.cn/debian/ buster main contrib non-free" > /etc/apt/sources.list && \
+        echo "deb-src [arch=amd64] http://mirrors.ustc.edu.cn/debian/ buster main contrib non-free" >> /etc/apt/sources.list && \
+        echo "deb [arch=amd64] http://mirrors.ustc.edu.cn/debian-security/ buster/updates main contrib non-free" >> /etc/apt/sources.list && \
+        echo "deb-src [arch=amd64] http://mirrors.ustc.edu.cn/debian-security/ buster/updates main contrib non-free" >> /etc/apt/sources.list && \
+        echo "deb [arch=amd64] http://mirrors.ustc.edu.cn/debian buster-backports main" >> /etc/apt/sources.list && \
         echo "deb [arch=amd64] http://packages.trafficmanager.net/debian/debian buster main contrib non-free" >> /etc/apt/sources.list && \
         echo "deb [arch=amd64] http://packages.trafficmanager.net/debian/debian buster-updates main contrib non-free" >> /etc/apt/sources.list
 
@@ -372,6 +375,10 @@ RUN apt-get install -y -t buster-backports \
         dwz \
         debhelper
 
+# 配置github镜像
+RUN git config --global url."https://hub.fastgit.xyz".insteadof https://github.com
+RUN git config --global url.https://gitlab.com/webrtc-mirror/depot_tools.git.insteadOf https://chromium.googlesource.com/chromium/tools/depot_tools.git
+
 RUN apt-get -y build-dep openssh
 
 # Build fix for ARMHF buster libsairedis
@@ -424,8 +431,9 @@ RUN export VERSION=1.14.2 \
  && echo 'export PATH=$PATH:$GOROOT/bin' >> /etc/bash.bashrc \
  && rm go$VERSION.linux-*.tar.gz
 
-RUN pip3 install --upgrade pip
-RUN pip2 install --upgrade 'pip<21'
+# 配置pypi镜像
+RUN pip3 install -i https://mirrors.ustc.edu.cn/pypi/web/simple --upgrade pip && pip3 config set global.index-url https://mirrors.ustc.edu.cn/pypi/web/simple
+RUN pip2 install -i https://mirrors.ustc.edu.cn/pypi/web/simple --upgrade 'pip<21' && pip2 config set global.index-url https://mirrors.ustc.edu.cn/pypi/web/simple
 RUN apt-get purge -y python-pip python3-pip python3-yaml
 
 # For building Python packages
@@ -558,6 +566,6 @@ LABEL "com.azure.dev.pipelines.agent.handler.node.path"="/usr/bin/node"
 # Install Bazel build system (amd64 and arm64 architectures are supported using this method)
 # TODO(PINS): Remove once pre-build Bazel binaries are available for armhf (armv7l)
 {%- if CONFIGURED_ARCH == "amd64" or CONFIGURED_ARCH == "arm64" %}
-ARG bazelisk_url=https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-{{ CONFIGURED_ARCH }}
+ARG bazelisk_url=https://hub.fastgit.xyz/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-{{ CONFIGURED_ARCH }}
 RUN curl -fsSL -o /usr/local/bin/bazel ${bazelisk_url} && chmod 755 /usr/local/bin/bazel
 {% endif -%}

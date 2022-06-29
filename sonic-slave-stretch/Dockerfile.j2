@@ -9,13 +9,16 @@ FROM {{ prefix }}debian:stretch
 
 MAINTAINER gulv@microsoft.com
 
+# 配置golang镜像
+ENV GOPROXY https://goproxy.cn,direct
+
 COPY ["no-check-valid-until", "/etc/apt/apt.conf.d/"]
 
-RUN echo "deb [arch=amd64] http://debian-archive.trafficmanager.net/debian/ stretch main contrib non-free" >> /etc/apt/sources.list && \
-        echo "deb-src [arch=amd64] http://debian-archive.trafficmanager.net/debian/ stretch main contrib non-free" >> /etc/apt/sources.list && \
-        echo "deb [arch=amd64] http://debian-archive.trafficmanager.net/debian-security/ stretch/updates main contrib non-free" >> /etc/apt/sources.list && \
-        echo "deb-src [arch=amd64] http://debian-archive.trafficmanager.net/debian-security/ stretch/updates main contrib non-free" >> /etc/apt/sources.list && \
-        echo "deb [arch=amd64] http://debian-archive.trafficmanager.net/debian stretch-backports main" >> /etc/apt/sources.list && \
+RUN echo "deb [arch=amd64] http://mirrors.ustc.edu.cn/debian/ stretch main contrib non-free" > /etc/apt/sources.list && \
+        echo "deb-src [arch=amd64] http://mirrors.ustc.edu.cn/debian/ stretch main contrib non-free" >> /etc/apt/sources.list && \
+        echo "deb [arch=amd64] http://mirrors.ustc.edu.cn/debian-security/ stretch/updates main contrib non-free" >> /etc/apt/sources.list && \
+        echo "deb-src [arch=amd64] http://mirrors.ustc.edu.cn/debian-security/ stretch/updates main contrib non-free" >> /etc/apt/sources.list && \
+        echo "deb [arch=amd64] http://mirrors.ustc.edu.cn/debian stretch-backports main" >> /etc/apt/sources.list && \
         echo "deb [arch=amd64] http://packages.trafficmanager.net/debian/debian stretch main contrib non-free" >> /etc/apt/sources.list && \
         echo "deb [arch=amd64] http://packages.trafficmanager.net/debian/debian stretch-updates main contrib non-free" >> /etc/apt/sources.list && \
         echo "deb [arch=amd64] http://packages.microsoft.com/debian/9/prod stretch main" >> /etc/apt/sources.list
@@ -298,8 +301,17 @@ RUN apt-get update && apt-get install -y \
         libauparse-dev \
         auditd
 
+# 配置github镜像
+RUN git config --global url."https://hub.fastgit.xyz".insteadof https://github.com
+RUN git config --global url.https://gitlab.com/webrtc-mirror/depot_tools.git.insteadOf https://chromium.googlesource.com/chromium/tools/depot_tools.git
+
 # For gmock
 RUN apt-get install -y libgmock-dev -t stretch-backports
+
+# 配置pypi镜像
+# RUN pip3 config set global.index-url https://mirrors.ustc.edu.cn/pypi/web/simple
+RUN pip3 install -i https://mirrors.ustc.edu.cn/pypi/web/simple --upgrade pip && pip3 config set global.index-url https://mirrors.ustc.edu.cn/pypi/web/simple
+RUN pip2 install -i https://mirrors.ustc.edu.cn/pypi/web/simple --upgrade 'pip<21' && pip2 config set global.index-url https://mirrors.ustc.edu.cn/pypi/web/simple
 
 # Install dependencies for dhcp relay test 
 RUN pip3 install parameterized==0.8.1
@@ -460,6 +472,6 @@ LABEL "com.azure.dev.pipelines.agent.handler.node.path"="/usr/bin/node"
 # Install Bazel build system (amd64 and arm64 architectures are supported using this method)
 # TODO(PINS): Remove once pre-build Bazel binaries are available for armhf (armv7l)
 {%- if CONFIGURED_ARCH == "amd64" or CONFIGURED_ARCH == "arm64" %}
-ARG bazelisk_url=https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-{{ CONFIGURED_ARCH }}
+ARG bazelisk_url=https://hub.fastgit.xyz/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-{{ CONFIGURED_ARCH }}
 RUN curl -fsSL -o /usr/local/bin/bazel ${bazelisk_url} && chmod 755 /usr/local/bin/bazel
 {% endif -%}
