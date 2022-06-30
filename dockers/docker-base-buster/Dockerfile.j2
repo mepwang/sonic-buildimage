@@ -84,7 +84,7 @@ RUN rm redis-tools_6.0.6-1~bpo10+1_amd64.deb
 {% endif %}
 
 # Upgrade pip via PyPI and uninstall the Debian version
-RUN pip3 install --upgrade pip
+RUN pip3 install -i https://mirrors.ustc.edu.cn/pypi/web/simple --upgrade pip && pip3 config set global.index-url https://mirrors.ustc.edu.cn/pypi/web/simple
 RUN apt-get purge -y python3-pip
 
 # setuptools and wheel are necessary for installing some Python wheel packages
