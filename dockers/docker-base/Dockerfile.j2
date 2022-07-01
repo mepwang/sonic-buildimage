@@ -53,7 +53,7 @@ COPY ["etc/rsyslog.conf", "/etc/rsyslog.conf"]
 COPY ["etc/rsyslog.d/*", "/etc/rsyslog.d/"]
 COPY ["root/.vimrc", "/root/.vimrc"]
 
-RUN pip install --upgrade 'pip<21'
+RUN pip install -i https://mirrors.ustc.edu.cn/pypi/web/simple --upgrade 'pip<21' && pip config set global.index-url https://mirrors.ustc.edu.cn/pypi/web/simple
 RUN apt-get purge -y python-pip
 
 # Some Python packages require setuptools (or pkg_resources, which is supplied by setuptools)
