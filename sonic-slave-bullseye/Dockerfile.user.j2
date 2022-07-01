@@ -26,6 +26,7 @@ RUN su $user -c "git config --global user.email $user@contoso.com"
 
 # 配置github镜像
 RUN su $user -c "git config --global url.'https://hub.fastgit.xyz'.insteadof https://github.com"
+RUN su $user -c "pip3 config set global.index-url https://mirrors.ustc.edu.cn/pypi/web/simple"
 
 COPY sonic-jenkins-id_rsa.pub /var/$user/.ssh/authorized_keys2
 RUN chown $user /var/$user/.ssh -R
