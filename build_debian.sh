@@ -61,6 +61,8 @@ TRUSTED_GPG_DIR=$BUILD_TOOL_PATH/trusted.gpg.d
 
 ## Prepare the file system directory
 if [[ -d $FILESYSTEM_ROOT ]]; then
+    sudo umount /sonic/fsroot-vs/var/lib/docker || :
+    sudo umount /sonic/fsroot-vs || :
     sudo rm -rf $FILESYSTEM_ROOT || die "Failed to clean chroot directory"
 fi
 mkdir -p $FILESYSTEM_ROOT
