@@ -1,6 +1,6 @@
 # sonic-buildimage国内编译适用
 
-修改了dockerfile、sources.list等文件，使sonic在中国大陆地区的网络编译不再需要代理
+修改了dockerfile、sources.list等文件，使sonic在中国大陆地区的编译不再需要网络代理
 
 * 修改dockerfile中的debian源为国内的ustc
 * 修改dockerfile中的pip源为ustc
