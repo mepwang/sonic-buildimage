@@ -1,3 +1,13 @@
+# sonic-buildimage国内编译适用
+
+修改了dockerfile、sources.list等文件，使sonic在中国大陆地区的网络编译不再需要代理
+
+* 修改dockerfile中的debian源为国内的ustc
+* 修改dockerfile中的pip源为ustc
+* 修改dockerfile添加环境变量GOPROXY=https://goproxy.cn
+* 修改dockerfile配置git,使git替换github
+* 修改拷贝到dockerfile里的sources.list文件，更改debian源为ustc
+
 *static analysis*:
 
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/Azure/sonic-buildimage.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Azure/sonic-buildimage/alerts/)
