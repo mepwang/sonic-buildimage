@@ -34,7 +34,7 @@ if [ "$ENABLE_VERSION_CONTROL_DEB" != "y" ] || [ ! -d files/build/versions/host-
         sudo mount -t proc proc $FILESYSTEM_ROOT/proc
         sudo LANG=C chroot $FILESYSTEM_ROOT /debootstrap/debootstrap --second-stage
     else
-        sudo http_proxy=$HTTP_PROXY SKIP_BUILD_HOOK=y debootstrap --variant=minbase --arch $CONFIGURED_ARCH $IMAGE_DISTRO $FILESYSTEM_ROOT http://debian-archive.trafficmanager.net/debian
+        sudo http_proxy=$HTTP_PROXY SKIP_BUILD_HOOK=y debootstrap --variant=minbase --arch $CONFIGURED_ARCH $IMAGE_DISTRO $FILESYSTEM_ROOT http://mirrors.ustc.edu.cn/debian
     fi
     RET=$?
     if [ $RET -ne 0 ]; then
